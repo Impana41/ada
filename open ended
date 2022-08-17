@@ -1,0 +1,93 @@
+// JavaScript program to implement
+// the approach
+ 
+// For storing complex values of nth roots
+// of unity we use complex
+class complex
+{
+    constructor(a, b = 0)
+    {
+        this.x = a;
+        this.y = b;
+    }
+     
+}
+ 
+function product(c1, c2)
+{
+    let c =new complex(0, 0);
+    c.x = c1.x * c2.x - c1.y * c2.y
+    c.y = c1.x * c2.y + c2.x * c1.y
+    return c
+}
+ 
+function sum(c1, c2)
+{
+    let c = new complex(0, 0);
+    c.x = c1.x + c2.x
+    c.y = c1.y + c2.y
+    return c
+}
+ 
+function difference(c1, c2)
+{
+    let c =new complex(0, 0);
+    c.x = c1.x - c2.x
+    c.y = c1.y - c2.y
+    return c
+}
+ 
+ 
+ 
+// Recursive function of FFT
+function fft(a)
+{
+    let n = a.length;
+ 
+    // if input contains just one element
+    if (n == 1)
+        return [a[0]]
+ 
+    // For storing n complex nth roots of unity
+    let w = new Array(n);
+    let alpha = -2 * Math.PI / n;
+    for (var i = 0; i < n; i++) {
+        w[i] = new complex(Math.cos(alpha * i), Math.sin(alpha * i));
+    }
+ 
+    let A0 = new Array(Math.floor(n / 2));
+    let A1 = new Array(Math.floor(n / 2));
+    for (var i = 0; i < Math.floor(n / 2); i++) {
+ 
+        // even indexed coefficients
+        A0[i] = a[i * 2];
+ 
+        // odd indexed coefficients
+        A1[i] = a[i * 2 + 1];
+    }
+ 
+    // Recursive call for even indexed coefficients
+    let y0 = fft(A0);
+ 
+    // Recursive call for odd indexed coefficients
+    let y1 = fft(A1);
+ 
+    // for storing values of y0, y1, y2, ..., yn-1.
+    let y = new Array(n);
+ 
+    for (var k = 0; k < Math.floor(n / 2); k++) {
+         
+        y[k] =  sum(y0[k], product(w[k], y1[k]));
+        y[k + Math.floor(n / 2)] = difference(y0[k], product(w[k], y1[k]));
+    }
+    return y;
+}
+ 
+// Driver code
+ 
+let a = [ new complex(1, 0), new complex(2, 0), new complex(3, 0), new complex(4, 0)];
+let b = fft(a);
+for (var b0 of b)
+    console.log("(", b0.x, ",", b0.y, ")")
+ 
+ 
